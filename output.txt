@@ -1,20 +1,15 @@
 5
-[Part{vName='proj_funding', sName='high', value=0, operation='null'},
- Part{vName='null', sName='null', value=0, operation='or'},
-  Part{vName='exp_level', sName='expert', value=0, operation='null'}]
-
-[Part{vName='risk', sName='low', vlue=0, operation='null'},
-Part{vName='null', sName='null', value=0, operation='and'},
- Part{vName='name', sName='khaloda', value=0, operation='null'}]
-
-
+[Part{vName='proj_funding', sName='high', value=0, operation='null'}, Part{vName='null', sName='null', value=0, operation='or'}, Part{vName='exp_level', sName='expert', value=0, operation='null'}]
+[Part{vName='risk', sName='low', value=0, operation='null'}]
 [Part{vName='proj_funding', sName='medium', value=0, operation='null'}, Part{vName='null', sName='null', value=0, operation='and'}, Part{vName='exp_level', sName='intermediate', value=0, operation='null'}]
 [Part{vName='risk', sName='normal', value=0, operation='null'}]
-
-
 [Part{vName='proj_funding', sName='medium', value=0, operation='null'}, Part{vName='null', sName='null', value=0, operation='and'}, Part{vName='exp_level', sName='beginner', value=0, operation='null'}]
 [Part{vName='risk', sName='normal', value=0, operation='null'}]
 [Part{vName='proj_funding', sName='low', value=0, operation='null'}, Part{vName='null', sName='null', value=0, operation='and'}, Part{vName='exp_level', sName='beginner', value=0, operation='null'}]
 [Part{vName='risk', sName='high', value=0, operation='null'}]
 [Part{vName='proj_funding', sName='very_low', value=0, operation='null'}, Part{vName='null', sName='null', value=0, operation='and'}, Part{vName='null', sName='null', value=0, operation='not'}, Part{vName='exp_level', sName='expert', value=0, operation='null'}]
 [Part{vName='risk', sName='high', value=0, operation='null'}]
+Fuzzy Logic Toolbox
+===================
+1- Create a new fuzzy system
+2- Quit

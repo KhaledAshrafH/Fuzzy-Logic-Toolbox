@@ -1,6 +1,17 @@
-proj_funding high or exp_level expert => risk low and name khaloda
+proj_funding high or exp_level expert => risk low
 proj_funding medium and exp_level intermediate => risk normal
 proj_funding medium and exp_level beginner => risk normal
 proj_funding low and exp_level beginner => risk high
 proj_funding very_low and not exp_level expert => risk high
+x
+
+proj_funding IN [0,100]
+exp_level IN [0,60]
+risk OUT [0,100]
+x
+
+exp_level
+beginner TRI 0 15 30
+intermediate TRI 15 30 45
+expert TRI 30 60 60
 x
