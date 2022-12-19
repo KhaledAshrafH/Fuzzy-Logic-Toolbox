@@ -1,7 +1,10 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 enum VarType {
@@ -12,6 +15,9 @@ enum FuzzySetType {
     TRI,
     TRAP
 }
+
+
+
 class Variable{
     String varName;
     VarType vType;
@@ -43,7 +49,7 @@ class Variable{
 }
 class MemberShip{
     String fuzzySetName;
-    double intercept = -1;
+    double intercept;
     public MemberShip(String fuzzySetName, double intercept) {
         this.fuzzySetName = fuzzySetName;
         this.intercept = intercept;
@@ -143,6 +149,11 @@ class Rule{
         output=new ArrayList<>();
         OutputMemberShip = new ArrayList<>();
     }
+    Rule(Rule rCopy){
+        this.input=rCopy.input;
+        this.output=rCopy.output;
+        this.OutputMemberShip = rCopy.OutputMemberShip;
+    }
 
     @Override
     public String toString() {
@@ -202,7 +213,7 @@ class Centroid{
     Centroid(){z=new ArrayList<>();}
 }
 class Center{
-    ArrayList<WeigtedAvg> centroid = new ArrayList<>();
+    ArrayList<WeightedAvg> centroid = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -211,11 +222,11 @@ class Center{
                 '}';
     }
 }
-class WeigtedAvg{
+class WeightedAvg {
     double Membership;
     double centroid;
-    String SetName = null;
-    public WeigtedAvg(double membership, double centroid,String SetName) {
+    String SetName;
+    public WeightedAvg(double membership, double centroid, String SetName) {
         Membership = membership;
         this.centroid = centroid;
         this.SetName = SetName;
@@ -223,7 +234,7 @@ class WeigtedAvg{
 
     @Override
     public String toString() {
-        return "WeigtedAvg{" +
+        return "WeightedAvg{" +
                 "Membership=" + Membership +
                 ", centroid=" + centroid +
                 ", SetName='" + SetName + '\'' +
@@ -280,13 +291,34 @@ public class Main {
                     rule.input.add(part);
                 }
             }
-            if(exitCheck) break;
+            if(exitCheck) {
+                for(Rule r:rules){
+                    System.out.println(r.input.toString());
+                    System.out.println(r.output.toString());
+                }
+                for (int j=0;j<rules.size();j++){
+                    if(rules.get(j).output.size()>1){
+                        for(int i=0;i<rules.get(j).output.size()&&rules.get(j).output.get(i)!=null;i+=2){
+                            Rule newRule=new Rule(rules.get(j));
+                            newRule.output=new ArrayList<>();
+                            newRule.output.add(rules.get(j).output.get(i));
+                            rules.add(newRule);
+                        }
+                        rules.get(j).output=null;
+                    }
+                    if(rules.get(j).output==null) {
+                        rules.remove(rules.get(j--));
+                    }
+                }
+                System.out.println("khaleeeeeeeeeeeeeeeeeeeeeeeeed");
+                for(Rule r:rules){
+                    System.out.println(r.input.toString());
+                    System.out.println(r.output.toString());
+                }
+                break;
+            }
             rules.add(rule);
         }
-//        for(Rule rule:rules){
-//            System.out.println(rule.input.toString());
-//            System.out.println(rule.output.toString());
-//        }
     }
     public static void freOpen(String File,String mode){
         if (mode.equalsIgnoreCase("r"))
@@ -529,13 +561,13 @@ public class Main {
                 sum+=item;
                 size++;
             }
-            c.centroid.add(new WeigtedAvg(map.get(set.setName),sum/size,set.setName));
+            c.centroid.add(new WeightedAvg(map.get(set.setName),sum/size,set.setName));
         }
 
         double SumAllMemberShips=0;
         double ProductAllCentroid=0;
 
-        for (WeigtedAvg wAvg:c.centroid){
+        for (WeightedAvg wAvg:c.centroid){
             SumAllMemberShips+=wAvg.Membership;
             ProductAllCentroid+=wAvg.centroid * wAvg.Membership;
         }
@@ -555,49 +587,48 @@ public class Main {
                 break;
         }
 
-        return new pair(result,c.centroid.get(i).SetName);
+        if(c.centroid.size()>0) return new pair(result,c.centroid.get(i).SetName);
+        else return null;
     }
-    public static void FuzzyLogic(Scanner input){
-        while (true){
+    public static void FuzzyLogic(Scanner input,String outputPath){
+        boolean checkTermination=true;
+        while (checkTermination){
             //Variables
             ArrayList<Variable> AllVariables = new ArrayList<>();
             //Rules
             ArrayList<Rule> rules=new ArrayList<>();
 
-
             System.out.print("""
-                Fuzzy Logic Toolbox
+                Welcome to Fuzzy Logic Toolbox with Console Version
                 ===================
                 1- Create a new fuzzy system
                 2- Quit
                 """
             );
+
             // 1 or 2
             char choice = input.next().charAt(0);
-            switch (choice){
-                case '1':
+            switch (choice) {
+                case '1' -> {
                     System.out.print("""
-                    Enter the systems name and a brief description:
-                    ------------------------------------------------
-                    """);
+                            Enter the systems name and a brief description:
+                            ------------------------------------------------
+                            """);
 
                     //name
                     input.nextLine();
                     String name = input.nextLine();
 
                     //description
-                    StringBuilder description= new StringBuilder();
+                    StringBuilder description = new StringBuilder();
                     do {
                         description.append(input.nextLine());
                     } while (!description.toString().endsWith("."));
-
                     ArrayList<Boolean> validate = new ArrayList<>();
 
                     //Initialize to validate Input
-                    Initialize(validate, 4,false);
-
+                    Initialize(validate, 4, false);
                     boolean cheekExit = false;
-
                     while (!cheekExit) {
                         System.out.print("""
                                 Main Menu:
@@ -613,7 +644,7 @@ public class Main {
 
                         switch (choiceMain) {
                             //1- Add variables.
-                            case '1':
+                            case '1' -> {
                                 validate.set(0, true);
                                 //logic input and output
                                 System.out.print("""
@@ -632,10 +663,10 @@ public class Main {
 
                                     AllVariables.add(var);
                                 }
+                            }
 //                                System.out.println(AllVariables);
-                                break;
                             //2- Add fuzzy sets to an existing variable.
-                            case '2':
+                            case '2' -> {
                                 if (validate.get(0)) {
 
                                     System.out.print("""
@@ -651,8 +682,8 @@ public class Main {
 
                                     Variable MyVariable = null;
                                     //o(n) instead of 0(M * N) ==> M = Number Of Variables
-                                    for (Variable var:AllVariables) {
-                                        if (var.varName.equals(varName)){
+                                    for (Variable var : AllVariables) {
+                                        if (var.varName.equals(varName)) {
                                             MyVariable = var;
                                             break;
                                         }
@@ -662,16 +693,16 @@ public class Main {
                                         if (line.equalsIgnoreCase("x")) break;
                                         String[] parts = line.split(" ");
                                         //input variables
-                                        if(MyVariable!=null)assignFuzzySet(MyVariable, parts);
+                                        if (MyVariable != null) assignFuzzySet(MyVariable, parts);
                                     }
 //                                    System.out.println(AllVariables);
                                     validate.set(1, true);
                                 } else {
                                     System.out.println("CANT ADD FUZZY SET! Please add the variables First.");
                                 }
-                                break;
+                            }
                             // 3- Add rules.
-                            case '3':
+                            case '3' -> {
                                 if (validate.get(0) && validate.get(1)) {
 
                                     System.out.print("""
@@ -686,9 +717,9 @@ public class Main {
                                 } else {
                                     System.out.println("CANT ADD THE RULES! Please add the fuzzy sets and variables first.");
                                 }
-                                break;
+                            }
                             // 4- Run the simulation on crisp values.
-                            case '4':
+                            case '4' -> {
                                 if (validate.get(1) && validate.get(2)) {
 
                                     System.out.print("""
@@ -702,7 +733,7 @@ public class Main {
                                         if (var.vType == VarType.IN) {
                                             System.out.print(var.varName + ": ");
                                             var.crispValue = input.nextInt();
-                                        }else {
+                                        } else {
                                             output.add(var);
                                         }
                                     }
@@ -714,12 +745,12 @@ public class Main {
 
                                     //3 Steps
                                     //Fuzzification
-                                        //1-Fuzzification
-                                        //2-CalcMemberships
+                                    //1-Fuzzification
+                                    //2-CalcMemberships
                                     Fuzzification(AllVariables);
 
                                     //clear MemberShips if Not Empty
-                                    for (Variable var:AllVariables)
+                                    for (Variable var : AllVariables)
                                         var.MemberShips.clear();
 
                                     CalcMemberships(AllVariables);
@@ -732,23 +763,23 @@ public class Main {
                                     //Inference
 
 
-                                    ArrayList<pair>AllPairs = new ArrayList<>();
-                                    for(Variable var:AllVariables){
-                                        if (var.vType==VarType.OUT){
+                                    ArrayList<pair> AllPairs = new ArrayList<>();
+                                    for (Variable var : AllVariables) {
+                                        if (var.vType == VarType.OUT) {
                                             ArrayList<Rule> AllOutputs = new ArrayList<>();
                                             String varname = var.varName;
-                                            for (Rule r:rules){
-                                                for (Part part:r.output){
-                                                    if (part.vName.equals(varname)){
+                                            for (Rule r : rules) {
+                                                for (Part part : r.output) {
+                                                    if (part.operation==null&&part.vName.equals(varname)) {
                                                         AllOutputs.add(r);
                                                     }
                                                 }
                                             }
 
-                                            ArrayList<pair> MO = inference(AllOutputs,AllVariables);
+                                            ArrayList<pair> MO = inference(AllOutputs, AllVariables);
 
                                             //Defuzzification
-                                            pair p = Defuzzification(MO,var);
+                                            pair p = Defuzzification(MO, var);
                                             AllPairs.add(p);
                                         }
                                     }
@@ -759,51 +790,197 @@ public class Main {
                                     System.out.println("Defuzzification => done\n");
 
 
-                                    for (int i =0;i<AllPairs.size();i++){
+                                    for (int i = 0; i < AllPairs.size(); i++) {
                                         str.append("The predicted ").append(output.get(i).varName).append(" is ").append(AllPairs.get(i).membershipName).append(" (").append(Math.round(AllPairs.get(i).membershipValue * 100) / 100.0).append(")\n");
-                                        System.out.println("The predicted " + output.get(i).varName + " is " + AllPairs.get(i).membershipName +  " (" + Math.round(AllPairs.get(i).membershipValue * 100) / 100.0 +")\n");
+                                        System.out.println("The predicted " + output.get(i).varName + " is " + AllPairs.get(i).membershipName + " (" + Math.round(AllPairs.get(i).membershipValue * 100) / 100.0 + ")\n");
                                     }
                                     validate.set(3, true);
 
 //                                    File f = new File("output.txt");
-                                    freOpen("output.txt","w");
-                                    System.out.println(str);
-                                    freOpen("con","w");
+                                    freOpen(outputPath, "w");
+                                    System.out.println("khaleeeeeeeeeeeeeeeeeeeeeeeeeeed"+str);
+                                    freOpen("con.txt", "w");
                                 } else {
                                     System.out.println("CANT START THE SIMULATION! Please add the fuzzy sets and rules first.");
                                 }
-                                break;
-                            case 'c':
-                                cheekExit = true;
-                                break;
-                            default:
-                                System.out.println("invalid Input");
+                            }
+                            case 'c' -> cheekExit = true;
+                            default -> System.out.println("invalid Input");
                         }
                     }
-                    continue;
-                case '2':
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("Invalid Input");
+                }
+                case '2' -> checkTermination = false;
+                default -> System.out.println("Invalid Input");
             }
         }
 
     }
 
+
+
+    public static class GUI extends JFrame implements ActionListener {
+        private final JButton inputFile;
+        private final JButton outputFile;
+        private final JButton run;
+        private final JTextArea resadd;
+        String inputPath="";
+        String outputPath="";
+        boolean checkGuiFinished;
+        GUI(boolean checkGuiFinished) {
+            this.checkGuiFinished=checkGuiFinished;
+            System.out.print("""
+                Welcome to Fuzzy Logic Toolbox with GUI Version
+                ===============================================
+                GUI Running Now...
+                """
+            );
+            setTitle("Fuzzy System");
+            setBounds(300, 90, 680, 540);
+            setResizable(false);
+
+            Container c = getContentPane();
+            c.setLayout(null);
+
+            JLabel title = new JLabel("Fuzzy Logic Toolbox");
+            title.setFont(new Font("Comic", Font.BOLD, 30));
+            title.setSize(600, 40);
+            title.setLocation(180, 30);
+            c.add(title);
+
+
+            inputFile = new JButton("Choose Input File");
+            inputFile.setFont(new Font("Arial", Font.PLAIN, 15));
+            inputFile.setSize(180, 30);
+            inputFile.setLocation(60, 190);
+            inputFile.addActionListener(this);
+            c.add(inputFile);
+
+
+            outputFile = new JButton("Choose Output Path");
+            outputFile.setFont(new Font("Arial", Font.PLAIN, 15));
+            outputFile.setSize(180, 30);
+            outputFile.setLocation(60, 235);
+            outputFile.addActionListener(this);
+            c.add(outputFile);
+
+            run = new JButton("Run");
+            run.setFont(new Font("Arial", Font.PLAIN, 15));
+            run.setSize(180, 30);
+            run.setLocation(60, 280);
+            run.addActionListener(this);
+            c.add(run);
+
+            JTextArea tout = new JTextArea();
+            tout.setFont(new Font("Arial", Font.PLAIN, 15));
+            tout.setSize(320, 350);
+            tout.setLocation(300, 100);
+            tout.setLineWrap(true);
+            tout.setEditable(false);
+            tout.setBorder(BorderFactory.createLineBorder(Color.black));
+            c.add(tout);
+
+            JLabel res = new JLabel("");
+            res.setFont(new Font("Arial", Font.PLAIN, 15));
+            res.setSize(285, 300);
+            res.setLocation(310, 120);
+            res.setBorder(BorderFactory.createLineBorder(Color.black));
+            c.add(res);
+
+            resadd = new JTextArea();
+            resadd.setFont(new Font("Arial", Font.PLAIN, 15));
+            resadd.setSize(285, 300);
+            resadd.setLocation(310, 120);
+            resadd.setLineWrap(true);
+            c.add(resadd);
+
+            setVisible(true);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == inputFile) {
+                JFileChooser choiceInput = new JFileChooser();
+                choiceInput.setCurrentDirectory(new java.io.File("."));
+                choiceInput.setDialogTitle("Choose Input File");
+                choiceInput.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                choiceInput.setAcceptAllFileFilterUsed(false);
+
+                if (choiceInput.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    inputPath= String.valueOf(choiceInput.getSelectedFile());
+                    inputPath = inputPath.replace("\\", "//");
+                    resadd.setText("File Input Selected Successfully");
+                }
+
+            }
+
+
+            else if (e.getSource() == outputFile) {
+                JFileChooser choiceOutput = new JFileChooser();
+                choiceOutput.setCurrentDirectory(new java.io.File("."));
+                choiceOutput.setDialogTitle("Choose Output Path");
+                choiceOutput.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                choiceOutput.setAcceptAllFileFilterUsed(false);
+                if (choiceOutput.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    outputPath= String.valueOf(choiceOutput.getSelectedFile());
+                    outputPath = outputPath.replace("\\", "//");
+                    outputPath+="//";
+                    resadd.setText("File Output Path Selected Successfully");
+                }
+            }
+            else if(e.getSource() == run){
+                if(inputPath.length()>1 && outputPath.length()>1){
+                    System.out.println("Program Running Successfully");
+                    freOpen(inputPath,"r");
+
+                    //scanner
+                    Scanner input = new Scanner(System.in);
+                    //FuzzyLogic
+                    resadd.setText("Running the simulation...\n");
+                    FuzzyLogic(input, String.valueOf(Path.of(outputPath + "output.txt")));
+                    String outputFileStr;
+                    try {
+                        outputFileStr = Files.readString(Path.of(outputPath + "output.txt"));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    resadd.setText(outputFileStr);
+                    inputPath="";
+                    outputPath="";
+                    // plotting
+                }
+                else resadd.setText("You Should Select input & output files");
+            }
+        }
+
+    }
+
+
     public static void main(String[] args) {
 
         // if GUI {freOpen}
         // else not freOpen
-
-        //freOpen
-        freOpen("input.txt","r");
-
-        //scanner
         Scanner input = new Scanner(System.in);
+        boolean checkGuiFinished=true;
+        while(checkGuiFinished){
+            System.out.print("""
+                Fuzzy Logic Toolbox
+                ===================
+                1- Run with GUI
+                2- Run with Console
+                3- Quit
+                """
+            );
+            int runChoice=input.nextInt();
 
-        //FuzzyLogic
-        FuzzyLogic(input);
+            if(runChoice==1) {
+                checkGuiFinished=false;
+                new GUI(checkGuiFinished);
+            }
+            else if(runChoice==2) FuzzyLogic(input,"output.txt");
+            else if(runChoice==3) break;
+            else System.out.println("Invalid Input");
+        }
+        System.out.println("System Finished Successfully");
 
     }
 }
+

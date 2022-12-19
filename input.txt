@@ -5,7 +5,6 @@ asdasdasdasdasd.
 proj_funding IN [0,100]
 exp_level IN [0,60]
 risk OUT [0,100]
-risk2 OUT [0,100]
 x
 2
 exp_level
@@ -26,26 +25,55 @@ low TRI 0 25 50
 normal TRI 25 50 75
 high TRI 50 100 100
 x
-2
-risk2
-low TRI 0 25 50
-Ahmed TRI 25 50 75
-high TRI 50 100 100
-x
 3
 proj_funding high or exp_level expert => risk low
-proj_funding high or exp_level expert => risk2 low
 proj_funding medium and exp_level intermediate => risk normal
-proj_funding medium and exp_level intermediate => risk2 Ahmed
 proj_funding medium and exp_level beginner => risk normal
-proj_funding medium and exp_level beginner => risk2 Ahmed
 proj_funding low and exp_level beginner => risk high
-proj_funding low and exp_level beginner => risk2 high
 proj_funding very_low and not exp_level expert => risk high
-proj_funding very_low and not exp_level expert => risk2 high
 x
 4
 50
 40
+close
+1
+asdasdasdas
+asdasdasdasdasd.
+1
+dirt IN [0,100]
+fabric IN [0,100]
+Wash_time OUT [0,60]
+x
+2
+dirt
+small TRAP 0 0 20 40
+medium TRAP 20 40 60 80
+large TRAP 60 80 100 100
+x
+2
+fabric
+soft TRAP 0 0 20 40
+ordinary TRAP 20 40 60 80
+stiff TRAP 60 80 100 100
+x
+2
+Wash_time
+v_small TRI 0 0 15
+small TRI 0 15 30
+standard TRI 15 30 45
+large TRI 30 45 60
+v_large TRI 45 60 60
+x
+3
+dirt small and fabric soft => Wash_time v_small
+dirt medium and fabric ordinary => Wash_time standard
+dirt small and not fabric soft or dirt medium and fabric soft => Wash_time small
+dirt medium and fabric stiff => Wash_time large
+dirt large and not fabric soft => Wash_time v_large
+dirt large and fabric soft => Wash_time standard
+x
+4
+60
+25
 close
 2

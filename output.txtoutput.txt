@@ -1,0 +1,7 @@
+Running the simulation...
+Fuzzification => done
+Inference => done
+Defuzzification => done
+The predicted risk is normal (37.5)
+The predicted risk2 is Ahmed (37.5)
+

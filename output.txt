@@ -1,17 +1,6 @@
-Running the simulation...
+khaleeeeeeeeeeeeeeeeeeeeeeeeeeedRunning the simulation...
 Fuzzification => done
 Inference => done
 Defuzzification => done
-The predicted risk is normal (37.5)
-The predicted risk2 is Ahmed (37.5)
+The predicted Wash_time is small (18.75)
 
-Main Menu:
-==========
-1- Add variables.
-2- Add fuzzy sets to an existing variable.
-3- Add rules.
-4- Run the simulation on crisp values.
-Fuzzy Logic Toolbox
-===================
-1- Create a new fuzzy system
-2- Quit
