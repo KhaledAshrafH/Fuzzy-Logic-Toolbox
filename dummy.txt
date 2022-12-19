@@ -1,0 +1,339 @@
+proj_funding IN [0,100]
+exp_level IN [0,60]
+risk OUT [0,100]
+risk2 OUT [0,100]
+x
+
+exp_level
+beginner TRI 0 15 30
+intermediate TRI 15 30 45
+expert TRI 30 60 60
+x
+
+proj_funding
+very_low TRAP 0 0 10 30
+low TRAP 10 30 40 60
+medium TRAP 40 60 70 90
+high TRAP 70 90 100 100
+x
+
+risk
+low TRI 0 25 50
+normal TRI 25 50 75
+high TRI 50 100 100
+x
+
+risk2
+low TRI 0 25 50
+Ahmed TRI 25 50 75
+high TRI 50 100 100
+x
+
+proj_funding high or exp_level expert => risk low
+proj_funding high or exp_level expert => risk2 low
+proj_funding medium and exp_level intermediate => risk normal
+proj_funding medium and exp_level intermediate => risk2 Ahmed
+proj_funding medium and exp_level beginner => risk normal
+proj_funding medium and exp_level beginner => risk2 Ahmed
+proj_funding low and exp_level beginner => risk high
+proj_funding low and exp_level beginner => risk2 high
+proj_funding very_low and not exp_level expert => risk high
+proj_funding very_low and not exp_level expert => risk2 high
+x
+
+
+
+
+
+
+
+
+
+
+
+dirt IN [0,100]
+fabric IN [0,60]
+Wash_time OUT [0,100]
+x
+
+dirt
+small TRAP 0 0 20 40
+medium TRAP 20 40 60 80
+large TRAP 60 80 100 100
+x
+
+fabric
+soft TRAP 0 0 20 40
+ordinary TRAP 20 40 60 80
+stiff TRAP 60 80 100 100
+x
+
+Wash_time
+v_small TRI 0 0 15
+small TRI 0 15 30
+standard TRI 15 30 45
+large TRI 30 45 60
+v_large TRI 45 60 60
+x
+
+
+dirt small and fabric soft => Wash_time v_small
+dirt medium and fabric ordinary => Wash_time standard
+dirt small and not fabric soft or dirt medium and fabric soft => Wash_time small
+dirt medium and fabric stiff => Wash_time large
+dirt large and not fabric soft => Wash_time v_large
+dirt large and fabric soft => Wash_time standard
+x
+
+
+Variable{varName='proj_funding', vType=IN, lower=0, upper=100, crispValue=50.0, fuzzySets=[FuzzySet{setName='very_low', sType=TRAP, values=[0, 0, 10, 30]}, FuzzySet{setName='low', sType=TRAP, values=[10, 30, 40, 60]}, FuzzySet{setName='medium', sType=TRAP, values=[40, 60, 70, 90]}, FuzzySet{setName='high', sType=TRAP, values=[70, 90, 100, 100]}], MemberShips=[MemberShip{fuzzySetName='very_low', intercept=0.0}, MemberShip{fuzzySetName='low', intercept=0.5}, MemberShip{fuzzySetName='medium', intercept=0.5}, MemberShip{fuzzySetName='high', intercept=0.0}], points=[point{x1=0.0, y1=0.0, x2=0.0, y2=1.0, x3=10.0, y3=1.0, x4=30.0, y4=0.0, VariableName=proj_funding, FuzzySetName='very_low'}, point{x1=10.0, y1=0.0, x2=30.0, y2=1.0, x3=40.0, y3=1.0, x4=60.0, y4=0.0, VariableName=proj_funding, FuzzySetName='low'}, point{x1=40.0, y1=0.0, x2=60.0, y2=1.0, x3=70.0, y3=1.0, x4=90.0, y4=0.0, VariableName=proj_funding, FuzzySetName='medium'}, point{x1=70.0, y1=0.0, x2=90.0, y2=1.0, x3=100.0, y3=1.0, x4=100.0, y4=0.0, VariableName=proj_funding, FuzzySetName='high'}]}
+Variable{varName='exp_level', vType=IN, lower=0, upper=60, crispValue=40.0, fuzzySets=[FuzzySet{setName='beginner', sType=TRI, values=[0, 15, 30]}, FuzzySet{setName='intermediate', sType=TRI, values=[15, 30, 45]}, FuzzySet{setName='expert', sType=TRI, values=[30, 60, 60]}], MemberShips=[MemberShip{fuzzySetName='beginner', intercept=0.0}, MemberShip{fuzzySetName='intermediate', intercept=0.3333333333333335}, MemberShip{fuzzySetName='expert', intercept=0.33333333333333326}], points=[point{x1=0.0, y1=0.0, x2=15.0, y2=1.0, x3=30.0, y3=0.0, x4=-1.0, y4=-1.0, VariableName=exp_level, FuzzySetName='beginner'}, point{x1=15.0, y1=0.0, x2=30.0, y2=1.0, x3=45.0, y3=0.0, x4=-1.0, y4=-1.0, VariableName=exp_level, FuzzySetName='intermediate'}, point{x1=30.0, y1=0.0, x2=60.0, y2=1.0, x3=60.0, y3=0.0, x4=-1.0, y4=-1.0, VariableName=exp_level, FuzzySetName='expert'}]}
+Variable{varName='risk', vType=OUT, lower=0, upper=100, crispValue=-1.0, fuzzySets=[FuzzySet{setName='low', sType=TRI, values=[0, 25, 50]}, FuzzySet{setName='normal', sType=TRI, values=[25, 50, 75]}, FuzzySet{setName='high', sType=TRI, values=[50, 100, 100]}], MemberShips=[], points=[point{x1=0.0, y1=0.0, x2=25.0, y2=1.0, x3=50.0, y3=0.0, x4=-1.0, y4=-1.0, VariableName=risk, FuzzySetName='low'}, point{x1=25.0, y1=0.0, x2=50.0, y2=1.0, x3=75.0, y3=0.0, x4=-1.0, y4=-1.0, VariableName=risk, FuzzySetName='normal'}, point{x1=50.0, y1=0.0, x2=100.0, y2=1.0, x3=100.0, y3=0.0, x4=-1.0, y4=-1.0, VariableName=risk, FuzzySetName='high'}]}
+
+
+
+[Part{vName='proj_funding', sName='high', operation='null'}, Part{vName='null', sName='null', operation='or'}, Part{vName='exp_level', sName='expert', operation='null'}]
+[Part{vName='risk', sName='low', operation='null'}]
+[Part{vName='proj_funding', sName='medium', operation='null'}, Part{vName='null', sName='null', operation='and'}, Part{vName='exp_level', sName='intermediate', operation='null'}]
+[Part{vName='risk', sName='normal', operation='null'}]
+[Part{vName='proj_funding', sName='medium', operation='null'}, Part{vName='null', sName='null', operation='and'}, Part{vName='exp_level', sName='beginner', operation='null'}]
+[Part{vName='risk', sName='normal', operation='null'}]
+[Part{vName='proj_funding', sName='low', operation='null'}, Part{vName='null', sName='null', operation='and'}, Part{vName='exp_level', sName='beginner', operation='null'}]
+[Part{vName='risk', sName='high', operation='null'}]
+[Part{vName='proj_funding', sName='very_low', operation='null'}, Part{vName='null', sName='null', operation='and'}, Part{vName='null', sName='null', operation='not'}, Part{vName='exp_level', sName='expert', operation='null'}]
+[Part{vName='risk', sName='high', operation='null'}]
+
+
+[
+    pair{membershipValue=0.33333333333333326, membershipName='low'},
+    pair{membershipValue=0.3333333333333335, membershipName='normal'},
+    pair{membershipValue=0.0, membershipName='normal'},
+    pair{membershipValue=0.0, membershipName='high'},
+    pair{membershipValue=0.0, membershipName='high'}
+]
+
+[
+    pair{membershipValue=0.33333333333333326, membershipName='low'},
+    pair{membershipValue=0.3333333333333335, membershipName='normal'},
+    pair{membershipValue=0.0, membershipName='high'},
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1
+asdasdasdas
+asdasdasdasdasd.
+1
+proj_funding IN [0,100]
+exp_level IN [0,60]
+risk OUT [0,100]
+risk2 OUT [0,100]
+x
+2
+exp_level
+beginner TRI 0 15 30
+intermediate TRI 15 30 45
+expert TRI 30 60 60
+x
+2
+proj_funding
+very_low TRAP 0 0 10 30
+low TRAP 10 30 40 60
+medium TRAP 40 60 70 90
+high TRAP 70 90 100 100
+x
+2
+risk
+low TRI 0 25 50
+normal TRI 25 50 75
+high TRI 50 100 100
+x
+2
+risk2
+low TRI 0 25 50
+Ahmed TRI 25 50 75
+high TRI 50 100 100
+x
+3
+proj_funding high or exp_level expert => risk low
+proj_funding high or exp_level expert => risk2 low
+proj_funding medium and exp_level intermediate => risk normal
+proj_funding medium and exp_level intermediate => risk2 Ahmed
+proj_funding medium and exp_level beginner => risk normal
+proj_funding medium and exp_level beginner => risk2 Ahmed
+proj_funding low and exp_level beginner => risk high
+proj_funding low and exp_level beginner => risk2 high
+proj_funding very_low and not exp_level expert => risk high
+proj_funding very_low and not exp_level expert => risk2 high
+x
+4
+50
+40
+close
+2
+
+
+
+
+
+
+
+
+1
+asdasdasdas
+asdasdasdasdasd.
+1
+dirt IN [0,100]
+fabric IN [0,100]
+Wash_time OUT [0,60]
+x
+2
+dirt
+small TRAP 0 0 20 40
+medium TRAP 20 40 60 80
+large TRAP 60 80 100 100
+x
+2
+fabric
+soft TRAP 0 0 20 40
+ordinary TRAP 20 40 60 80
+stiff TRAP 60 80 100 100
+x
+2
+Wash_time
+v_small TRI 0 0 15
+small TRI 0 15 30
+standard TRI 15 30 45
+large TRI 30 45 60
+v_large TRI 45 60 60
+x
+3
+dirt small and fabric soft => Wash_time v_small
+dirt medium and fabric ordinary => Wash_time standard
+dirt small and not fabric soft or dirt medium and fabric soft => Wash_time small
+dirt medium and fabric stiff => Wash_time large
+dirt large and not fabric soft => Wash_time v_large
+dirt large and fabric soft => Wash_time standard
+x
+4
+60
+25
+close
+2
+
+
+
+
+
+
+1
+asdasdasdas
+asdasdasdasdasd.
+1
+proj_funding IN [0,100]
+exp_level IN [0,60]
+risk OUT [0,100]
+risk2 OUT [0,100]
+x
+2
+exp_level
+beginner TRI 0 15 30
+intermediate TRI 15 30 45
+expert TRI 30 60 60
+x
+2
+proj_funding
+very_low TRAP 0 0 10 30
+low TRAP 10 30 40 60
+medium TRAP 40 60 70 90
+high TRAP 70 90 100 100
+x
+2
+risk
+low TRI 0 25 50
+normal TRI 25 50 75
+high TRI 50 100 100
+x
+2
+risk2
+low TRI 0 25 50
+Ahmed TRI 25 50 75
+high TRI 50 100 100
+x
+3
+proj_funding high or exp_level expert => risk low
+proj_funding high or exp_level expert => risk2 low
+proj_funding medium and exp_level intermediate => risk normal
+proj_funding medium and exp_level intermediate => risk2 Ahmed
+proj_funding medium and exp_level beginner => risk normal
+proj_funding medium and exp_level beginner => risk2 Ahmed
+proj_funding low and exp_level beginner => risk high
+proj_funding low and exp_level beginner => risk2 high
+proj_funding very_low and not exp_level expert => risk high
+proj_funding very_low and not exp_level expert => risk2 high
+x
+4
+50
+40
+close
+1
+asdasdasdas
+asdasdasdasdasd.
+1
+dirt IN [0,100]
+fabric IN [0,100]
+Wash_time OUT [0,60]
+x
+2
+dirt
+small TRAP 0 0 20 40
+medium TRAP 20 40 60 80
+large TRAP 60 80 100 100
+x
+2
+fabric
+soft TRAP 0 0 20 40
+ordinary TRAP 20 40 60 80
+stiff TRAP 60 80 100 100
+x
+2
+Wash_time
+v_small TRI 0 0 15
+small TRI 0 15 30
+standard TRI 15 30 45
+large TRI 30 45 60
+v_large TRI 45 60 60
+x
+3
+dirt small and fabric soft => Wash_time v_small
+dirt medium and fabric ordinary => Wash_time standard
+dirt small and not fabric soft or dirt medium and fabric soft => Wash_time small
+dirt medium and fabric stiff => Wash_time large
+dirt large and not fabric soft => Wash_time v_large
+dirt large and fabric soft => Wash_time standard
+x
+4
+60
+25
+close
+2
+
+
+
+
+
+
+
+
+
