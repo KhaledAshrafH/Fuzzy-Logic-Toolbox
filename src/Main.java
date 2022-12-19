@@ -9,13 +9,11 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -24,21 +22,19 @@ enum VarType {
     IN,
     OUT
 }
-
-// enum for choosing type of fuzzy sets triangle , trapsoide
+// enum for choosing type of fuzzy Sets triangle , Trapezoid
 enum FuzzySetType {
     TRI,
     TRAP
 }
-
 class Variable{
     String varName;
     VarType vType;
     long lower,upper;
-    double crispValue=-1;
+    double crispValue = -1; //Each Input have Crisp Value To Calculate Memberships
     ArrayList<FuzzySet> fuzzySets;
-    ArrayList<MemberShip> MemberShips;
-    ArrayList<point> points;
+    ArrayList<MemberShip> MemberShips;// Intercept values For Each Variable
+    ArrayList<point> points;//Each Variable Have Points Of its FuzzySets
     Variable(){
         fuzzySets=new ArrayList<>();
         points=new ArrayList<>();
@@ -47,7 +43,7 @@ class Variable{
 }
 class MemberShip{
     String fuzzySetName;
-    double intercept;
+    double intercept;//
     public MemberShip(String fuzzySetName, double intercept) {
         this.fuzzySetName = fuzzySetName;
         this.intercept = intercept;
@@ -87,50 +83,48 @@ class point{
 class FuzzySet{
     String setName;
     FuzzySetType sType;
-    ArrayList<Double> values;
+    ArrayList<Double> values;//inputs From User
     FuzzySet(){
         values=new ArrayList<>();
     }
 }
 class Part{
     String vName,sName;
-    String operation=null;
-
+    String operation = null;//not and or
 }
 class Rule{
     ArrayList<Part> input,output;
-    ArrayList<MemberShip> OutputMemberShip;
+    ArrayList<MemberShip> OutputMemberShip;//All Memberships Output
     Rule(){
         input=new ArrayList<>();
         output=new ArrayList<>();
         OutputMemberShip = new ArrayList<>();
     }
+    // copy constructor
     Rule(Rule rCopy){
         this.input=rCopy.input;
         this.output=rCopy.output;
         this.OutputMemberShip = rCopy.OutputMemberShip;
     }
 }
-class Fourth{
+class RuleProperty{
     String varName = null;
     String SetName = null;
     //Result MemberShips
-    double Result=-1;
+    double Result = -1;
     String operation = null;
 
-    public Fourth(String varName, String setName, double result) {
+    public RuleProperty(String varName, String setName, double result) {
         this.varName = varName;
         SetName = setName;
         Result = result;
     }
 
-    public Fourth(String operation) {
+    public RuleProperty(String operation) {
         this.operation = operation;
     }
-
 }
-
-// class for holding membership name and its value..
+// class for holding membership name and its value
 class pair{
     double membershipValue;
     String membershipName;
@@ -145,9 +139,6 @@ class Centroid{
     ArrayList<pair> z;
     Centroid(){z=new ArrayList<>();}
 }
-class Center{
-    ArrayList<WeightedAvg> centroid = new ArrayList<>();
-}
 class WeightedAvg {
     double Membership;
     double centroid;
@@ -158,14 +149,15 @@ class WeightedAvg {
         this.SetName = SetName;
     }
 }
+//each output have membership value from (not and or)
 class Inference{
-    ArrayList<Fourth> OutMemberships;
+    ArrayList<RuleProperty> OutMemberships;
     public Inference() {
         OutMemberships = new ArrayList<>();
     }
 }
 
-public class Main {
+class Main {
     static String str = "Running the simulation...\nFuzzification => done\nInference => done\nDefuzzification => done\n";
     public static void ReadRules(ArrayList<Rule> rules, Scanner input){
         boolean exitCheck=false;
@@ -221,7 +213,7 @@ public class Main {
             rules.add(rule);
         }
     }
-    // Read Input and Write Output in Fileeee..........
+    // Read Input and Write Output in Files..........
     public static void freOpen(String File,String mode){
         if (mode.equalsIgnoreCase("r"))
         {
@@ -252,15 +244,13 @@ public class Main {
     public static void assignVar(Variable var, String[] parts) {
         //proj_funding
         // IN
-
         var.varName = parts[0];
         if (parts[1].equalsIgnoreCase("in")){
             var.vType = VarType.IN;
         } else if (parts[1].equalsIgnoreCase("out")) {
             var.vType = VarType.OUT;
         }
-        // [0
-        // 100]
+
         String[] parts2 =  parts[2].split(",");
 
         var.lower = Integer.parseInt(parts2[0].replaceAll("[^0-9]", ""));//0
@@ -384,7 +374,7 @@ public class Main {
     }
     public static ArrayList<pair> inference(ArrayList<Rule> rules,ArrayList<Variable>Variables){
         Inference inference = new Inference();
-        Centroid c = new Centroid();
+        Centroid centroid = new Centroid();
 
         for (Rule rule:rules){
             for (Part part:rule.input) {
@@ -398,56 +388,55 @@ public class Main {
                     }
 
                 if (part.operation==null)
-                    inference.OutMemberships.add(new Fourth(part.vName, part.sName,result));
-                else inference.OutMemberships.add(new Fourth(part.operation));
+                    inference.OutMemberships.add(new RuleProperty(part.vName, part.sName,result));
+                else inference.OutMemberships.add(new RuleProperty(part.operation));
             }
 
             for (int i=0;i<inference.OutMemberships.size();i++){//not
                 if (inference.OutMemberships.get(i).operation!=null && inference.OutMemberships.get(i).operation.equals("not")){
                     inference.OutMemberships.remove(i);
-                    inference.OutMemberships.set(i,new Fourth(inference.OutMemberships.get(i).varName,inference.OutMemberships.get(i).SetName,1 - inference.OutMemberships.get(i).Result));
+                    inference.OutMemberships.set(i,new RuleProperty(inference.OutMemberships.get(i).varName,inference.OutMemberships.get(i).SetName,1 - inference.OutMemberships.get(i).Result));
                     i--;
                 }
             }
 
             for (int i=0;i<inference.OutMemberships.size();i++){//before
                 if (inference.OutMemberships.get(i).operation!=null && inference.OutMemberships.get(i).operation.equals("and")){
-                    inference.OutMemberships.set(i,new Fourth(null));
-                    inference.OutMemberships.set(i-1,new Fourth(inference.OutMemberships.get(i-1).varName,inference.OutMemberships.get(i-1).SetName,Math.min(inference.OutMemberships.get(i-1).Result,inference.OutMemberships.get(i+1).Result)));
-                    inference.OutMemberships.set(i+1,new Fourth(null));
+                    inference.OutMemberships.set(i,new RuleProperty(null));
+                    inference.OutMemberships.set(i-1,new RuleProperty(inference.OutMemberships.get(i-1).varName,inference.OutMemberships.get(i-1).SetName,Math.min(inference.OutMemberships.get(i-1).Result,inference.OutMemberships.get(i+1).Result)));
+                    inference.OutMemberships.set(i+1,new RuleProperty(null));
                 }
             }
 
             for (int i=0;i<inference.OutMemberships.size();i++){//After
                 if (inference.OutMemberships.get(i).operation!=null && inference.OutMemberships.get(i).operation.equals("or")){
-                    inference.OutMemberships.set(i,new Fourth(null));
-                    inference.OutMemberships.set(i+1,new Fourth(inference.OutMemberships.get(i+1).varName,inference.OutMemberships.get(i+1).SetName,Math.max(inference.OutMemberships.get(i-1).Result,inference.OutMemberships.get(i+1).Result)));
-                    inference.OutMemberships.set(i-1,new Fourth(null));
+                    inference.OutMemberships.set(i,new RuleProperty(null));
+                    inference.OutMemberships.set(i+1,new RuleProperty(inference.OutMemberships.get(i+1).varName,inference.OutMemberships.get(i+1).SetName,Math.max(inference.OutMemberships.get(i-1).Result,inference.OutMemberships.get(i+1).Result)));
+                    inference.OutMemberships.set(i-1,new RuleProperty(null));
                 }
             }
 
             double maxValue = 0;
-            for (Fourth f : inference.OutMemberships) maxValue = Math.max(f.Result,maxValue);
+            for (RuleProperty f : inference.OutMemberships) maxValue = Math.max(f.Result,maxValue);
 
-            String Setname = null;
+            String SetName = null;
             // o(n)
             for (Part part:rule.output)
             {
-                Setname = part.sName;
+                SetName = part.sName;
             }
 
-            c.z.add(new pair(maxValue,Setname));
+            centroid.z.add(new pair(maxValue,SetName));
 
             inference.OutMemberships.clear();
         }
 
-        return c.z;
+        return centroid.z;
     }
     public static pair Defuzzification(ArrayList<pair> MachineOutput,Variable output){
 
         HashMap<String,Double> map = new HashMap<>();
-
-        Center c = new Center();
+        ArrayList<WeightedAvg> centroid = new ArrayList<>();
 
         for (pair p : MachineOutput) {
             if (!map.containsKey(p.membershipName))
@@ -465,24 +454,24 @@ public class Main {
                 sum+=item;
                 size++;
             }
-            c.centroid.add(new WeightedAvg(map.get(set.setName),sum/size,set.setName));
+            centroid.add(new WeightedAvg(map.get(set.setName),sum/size,set.setName));
         }
 
         double SumAllMemberShips=0;
         double ProductAllCentroid=0;
 
-        for (WeightedAvg wAvg:c.centroid){
+        for (WeightedAvg wAvg:centroid){
             SumAllMemberShips+=wAvg.Membership;
             ProductAllCentroid+=wAvg.centroid * wAvg.Membership;
         }
         double result = ProductAllCentroid/SumAllMemberShips;
 
-        int Setsize = output.fuzzySets.size();
-        double Initial = (double)output.upper/Setsize;
+        int setSize = output.fuzzySets.size();
+        double Initial = (double)output.upper/setSize;
         ArrayList<Double> AllRanges = new ArrayList<>();
         AllRanges.add(0.0);
 
-        for (int i = 1;i<=Setsize;i++){
+        for (int i = 1;i<=setSize;i++){
             AllRanges.add(Initial * i);
         }
         int i=0;
@@ -491,13 +480,13 @@ public class Main {
                 break;
         }
 
-        if(c.centroid.size()>0) return new pair(result,c.centroid.get(i).SetName);
+        if(centroid.size()>0) return new pair(result,centroid.get(i).SetName);
         else return null;
     }
     static ArrayList<ArrayList<Variable>> Plotting = new ArrayList<>();
     public static void FuzzyLogic(Scanner input,String outputPath) {
         boolean checkTermination = true;
-        ArrayList<Variable> AllVariables = null;
+        ArrayList<Variable> AllVariables;
         while (checkTermination) {
             //Variables
             AllVariables = new ArrayList<>();
@@ -666,10 +655,10 @@ public class Main {
                                     for (Variable var : AllVariables) {
                                         if (var.vType == VarType.OUT) {
                                             ArrayList<Rule> AllOutputs = new ArrayList<>();
-                                            String varname = var.varName;
+                                            String varName = var.varName;
                                             for (Rule r : rules) {
                                                 for (Part part : r.output) {
-                                                    if (part.operation == null && part.vName.equals(varname)) {
+                                                    if (part.operation == null && part.vName.equals(varName)) {
                                                         AllOutputs.add(r);
                                                     }
                                                 }
@@ -718,12 +707,12 @@ public class Main {
         private final JButton inputFile;
         private final JButton outputFile;
         private final JButton run;
-        private final JTextArea resadd;
+        private final JTextArea jText;
         String inputPath="";
         String outputPath="";
         boolean checkGuiFinished;
 
-        //ploting
+        //plotting
 
         public static class Drawing extends ApplicationFrame{
             private XYDataset createDataset(Variable var) {
@@ -744,7 +733,7 @@ public class Main {
             }
             public Drawing(String applicationTitle, String chartTitle,Variable var) {
                 super(applicationTitle);
-                JFreeChart xylineChart = ChartFactory.createXYLineChart(
+                JFreeChart lineChart = ChartFactory.createXYLineChart(
                         chartTitle,
                         "Ranges",
                         "Membership",
@@ -752,9 +741,9 @@ public class Main {
                         PlotOrientation.VERTICAL,
                         true, true, false);
 
-                ChartPanel chartPanel = new ChartPanel(xylineChart);
+                ChartPanel chartPanel = new ChartPanel(lineChart);
                 chartPanel.setPreferredSize(new java.awt.Dimension(600, 400));
-                final XYPlot plot = xylineChart.getXYPlot();
+                final XYPlot plot = lineChart.getXYPlot();
 
                 XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
                 renderer.setSeriesPaint(0, Color.BLUE);
@@ -774,9 +763,8 @@ public class Main {
                 plot.setRenderer(renderer);
                 setContentPane(chartPanel);
             }
-
         }
-        //ploting
+        //plotting
 
         GUI(boolean checkGuiFinished) {
             this.checkGuiFinished=checkGuiFinished;
@@ -838,16 +826,16 @@ public class Main {
             res.setBorder(BorderFactory.createLineBorder(Color.black));
             c.add(res);
 
-            resadd = new JTextArea();
-            resadd.setFont(new Font("Arial", Font.PLAIN, 15));
-            resadd.setSize(285, 300);
-            resadd.setLocation(310, 120);
-            resadd.setLineWrap(true);
-            c.add(resadd);
+            jText = new JTextArea();
+            jText.setFont(new Font("Arial", Font.PLAIN, 15));
+            jText.setSize(285, 300);
+            jText.setLocation(310, 120);
+            jText.setLineWrap(true);
+            c.add(jText);
 
             setVisible(true);
+            this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         }
-
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == inputFile) {
                 JFileChooser choiceInput = new JFileChooser();
@@ -859,7 +847,7 @@ public class Main {
                 if (choiceInput.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     inputPath= String.valueOf(choiceInput.getSelectedFile());
                     inputPath = inputPath.replace("\\", "//");
-                    resadd.setText("File Input Selected Successfully");
+                    jText.setText("File Input Selected Successfully");
                 }
 
             }
@@ -874,7 +862,7 @@ public class Main {
                     outputPath= String.valueOf(choiceOutput.getSelectedFile());
                     outputPath = outputPath.replace("\\", "//");
                     outputPath+="//";
-                    resadd.setText("File Output Path Selected Successfully");
+                    jText.setText("File Output Path Selected Successfully");
                 }
             }
 
@@ -886,20 +874,14 @@ public class Main {
                     //scanner
                     Scanner input = new Scanner(System.in);
                     //FuzzyLogic
-                    resadd.setText("Running the simulation...\n");
+                    jText.setText("Running the simulation...\n");
                     FuzzyLogic(input, String.valueOf(Path.of(outputPath + "output.txt")));
-                    String outputFileStr;
-                    try {
-                        outputFileStr = Files.readString(Path.of(outputPath + "output.txt"));
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    resadd.setText(str);
+
+                    jText.setText(str);
                     str="Running the simulation...\nFuzzification => done\nInference => done\nDefuzzification => done\n";
                     inputPath="";
                     outputPath="";
                     // plotting
-                    int i=0;
                     for (ArrayList<Variable> var:Plotting){
                         for (Variable v:var){
                             GUI.Drawing chart = new GUI.Drawing("Fuzzy Toolbox", v.varName,v);
@@ -910,14 +892,11 @@ public class Main {
                     }
                     Plotting.clear();
                 }
-                else resadd.setText("You Should Select input & output files");
+                else jText.setText("You Should Select input & output files");
             }
         }
-
     }
-
     public static void main(String[] args) {
-
         // if GUI {freOpen}
         // else not freOpen
         Scanner input = new Scanner(System.in);
@@ -944,12 +923,3 @@ public class Main {
         //System.out.println("System Finished Successfully");
     }
 }
-
-
-//System.in   System.in Read From File Instead Of Console
-//very_low
-// TRAP
-// 0
-// 0
-// 10
-// 30

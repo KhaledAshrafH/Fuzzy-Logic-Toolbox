@@ -1,6 +1,7 @@
 1
-asdasdasdas
-asdasdasdasdasd.
+Project Risk Estimation
+The problem is to estimate the risk level of a project based on the project
+funding and the technical experience of the project’s team members.
 1
 proj_funding IN [0,100]
 exp_level IN [0,60]
@@ -37,8 +38,9 @@ x
 40
 close
 1
-asdasdasdas
-asdasdasdasdasd.
+Project Risk Estimation
+The problem is to estimate the risk level of a project based on the project
+funding and the technical experience of the project’s team members.
 1
 dirt IN [0,100]
 fabric IN [0,100]
