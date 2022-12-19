@@ -1,3 +1,15 @@
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.ui.RefineryUtilities;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -27,25 +39,10 @@ class Variable{
     ArrayList<FuzzySet> fuzzySets;
     ArrayList<MemberShip> MemberShips;
     ArrayList<point> points;
-
     Variable(){
         fuzzySets=new ArrayList<>();
         points=new ArrayList<>();
         MemberShips=new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "Variable{" +
-                "varName='" + varName + '\'' +
-                ", vType=" + vType +
-                ", lower=" + lower +
-                ", upper=" + upper +
-                ", crispValue=" + crispValue +
-                ", fuzzySets=" + fuzzySets +
-                ", MemberShips=" + MemberShips +
-                ", points=" + points +
-                '}';
     }
 }
 class MemberShip{
@@ -55,22 +52,12 @@ class MemberShip{
         this.fuzzySetName = fuzzySetName;
         this.intercept = intercept;
     }
-
-    @Override
-    // Using in debugging to print
-    public String toString() {
-        return "MemberShip{" +
-                "fuzzySetName='" + fuzzySetName + '\'' +
-                ", intercept=" + intercept +
-                '}';
-    }
 }
 // Class point for making the Tri or Trap shapes
 class point{
     double x1,x2,y1,y2,x3,y3,x4 = -1,y4 = -1;//max 4 points in TRAP and max 3 points in TRI
     String FuzzySetName;
     String VariableName;
-
     //TRI
     public point(String fuzzySetName,String VariableName ,double x1, double y1, double x2, double y2,double x3, double y3) {
         this.x1 = x1;
@@ -96,22 +83,6 @@ class point{
         this.VariableName = VariableName;
 
     }
-
-    @Override
-    public String toString() {
-        return "point{" +
-                "x1=" + x1 +
-                ", y1=" + y1 +
-                ", x2=" + x2 +
-                ", y2=" + y2 +
-                ", x3=" + x3 +
-                ", y3=" + y3 +
-                ", x4=" + x4 +
-                ", y4=" + y4 +
-                ", VariableName=" + VariableName +
-                ", FuzzySetName='" + FuzzySetName + '\'' +
-                '}';
-    }
 }
 class FuzzySet{
     String setName;
@@ -120,29 +91,11 @@ class FuzzySet{
     FuzzySet(){
         values=new ArrayList<>();
     }
-
-    @Override
-    public String toString() {
-        return "FuzzySet{" +
-                "setName='" + setName + '\'' +
-                ", sType=" + sType +
-                ", values=" + values +
-                '}';
-    }
 }
 class Part{
     String vName,sName;
-
     String operation=null;
 
-    @Override
-    public String toString() {
-        return "Part{" +
-                "vName='" + vName + '\'' +
-                ", sName='" + sName + '\'' +
-                ", operation='" + operation + '\'' +
-                '}';
-    }
 }
 class Rule{
     ArrayList<Part> input,output;
@@ -156,14 +109,6 @@ class Rule{
         this.input=rCopy.input;
         this.output=rCopy.output;
         this.OutputMemberShip = rCopy.OutputMemberShip;
-    }
-
-    @Override
-    public String toString() {
-        return "Rule{" +
-                "input=" + input +
-                ", output=" + output +
-                '}';
     }
 }
 class Fourth{
@@ -183,15 +128,6 @@ class Fourth{
         this.operation = operation;
     }
 
-    @Override
-    public String toString() {
-        return "Fourth{" +
-                "varName='" + varName + '\'' +
-                ", SetName='" + SetName + '\'' +
-                ", Result=" + Result +
-                ", operation='" + operation + '\'' +
-                '}';
-    }
 }
 
 // class for holding membership name and its value..
@@ -204,14 +140,6 @@ class pair{
         this.membershipName = membershipName;
     }
 
-    @Override
-    public String toString() {
-        return "pair{" +
-                "membershipValue=" + membershipValue +
-                ", membershipName='" + membershipName + '\'' +
-                '}';
-    }
-
 }
 class Centroid{
     ArrayList<pair> z;
@@ -219,13 +147,6 @@ class Centroid{
 }
 class Center{
     ArrayList<WeightedAvg> centroid = new ArrayList<>();
-
-    @Override
-    public String toString() {
-        return "Center{" +
-                "centroid=" + centroid +
-                '}';
-    }
 }
 class WeightedAvg {
     double Membership;
@@ -236,32 +157,16 @@ class WeightedAvg {
         this.centroid = centroid;
         this.SetName = SetName;
     }
-
-    @Override
-    public String toString() {
-        return "WeightedAvg{" +
-                "Membership=" + Membership +
-                ", centroid=" + centroid +
-                ", SetName='" + SetName + '\'' +
-                '}';
-    }
 }
 class Inference{
     ArrayList<Fourth> OutMemberships;
-
     public Inference() {
         OutMemberships = new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "Inference{" +
-                "OutMemberships=" + OutMemberships +
-                '}';
     }
 }
 
 public class Main {
+    static String str = "Running the simulation...\nFuzzification => done\nInference => done\nDefuzzification => done\n";
     public static void ReadRules(ArrayList<Rule> rules, Scanner input){
         boolean exitCheck=false;
         while(true){
@@ -297,10 +202,6 @@ public class Main {
                 }
             }
             if(exitCheck) {
-                for(Rule r:rules){
-                    System.out.println(r.input.toString());
-                    System.out.println(r.output.toString());
-                }
                 for (int j=0;j<rules.size();j++){
                     if(rules.get(j).output.size()>1){
                         for(int i=0;i<rules.get(j).output.size()&&rules.get(j).output.get(i)!=null;i+=2){
@@ -315,17 +216,11 @@ public class Main {
                         rules.remove(rules.get(j--));
                     }
                 }
-                System.out.println("khaleeeeeeeeeeeeeeeeeeeeeeeeed");
-                for(Rule r:rules){
-                    System.out.println(r.input.toString());
-                    System.out.println(r.output.toString());
-                }
                 break;
             }
             rules.add(rule);
         }
     }
-
     // Read Input and Write Output in Fileeee..........
     public static void freOpen(String File,String mode){
         if (mode.equalsIgnoreCase("r"))
@@ -355,17 +250,21 @@ public class Main {
         }
     }
     public static void assignVar(Variable var, String[] parts) {
+        //proj_funding
+        // IN
+
         var.varName = parts[0];
         if (parts[1].equalsIgnoreCase("in")){
             var.vType = VarType.IN;
         } else if (parts[1].equalsIgnoreCase("out")) {
             var.vType = VarType.OUT;
         }
-
+        // [0
+        // 100]
         String[] parts2 =  parts[2].split(",");
 
-        var.lower = Integer.parseInt(parts2[0].replaceAll("[^0-9]", ""));
-        var.upper = Integer.parseInt(parts2[1].replaceAll("[^0-9]", ""));
+        var.lower = Integer.parseInt(parts2[0].replaceAll("[^0-9]", ""));//0
+        var.upper = Integer.parseInt(parts2[1].replaceAll("[^0-9]", ""));//100
     }
     public static void assignFuzzySet(Variable var, String[] parts) {
         //o(1)
@@ -382,15 +281,15 @@ public class Main {
             obj.sType=FuzzySetType.TRI;
         }
         var.fuzzySets.add(obj);
-        }
+    }
     public static void Fuzzification(ArrayList<Variable> Variables){
         for (Variable var:Variables){
             point p = null;
             for (FuzzySet set:var.fuzzySets){
                 if (set.sType==FuzzySetType.TRI){
-                     p = new point(set.setName, var.varName, set.values.get(0),0,set.values.get(1),1,set.values.get(2),0);
+                    p = new point(set.setName, var.varName, set.values.get(0),0,set.values.get(1),1,set.values.get(2),0);
                 }else if(set.sType==FuzzySetType.TRAP){
-                     p = new point(set.setName,var.varName,set.values.get(0),0,set.values.get(1),1,set.values.get(2),1,set.values.get(3),0);
+                    p = new point(set.setName,var.varName,set.values.get(0),0,set.values.get(1),1,set.values.get(2),1,set.values.get(3),0);
                 }
                 var.points.add(p);
             }
@@ -546,8 +445,6 @@ public class Main {
     }
     public static pair Defuzzification(ArrayList<pair> MachineOutput,Variable output){
 
-        System.out.println(MachineOutput.toString());
-
         HashMap<String,Double> map = new HashMap<>();
 
         Center c = new Center();
@@ -597,20 +494,22 @@ public class Main {
         if(c.centroid.size()>0) return new pair(result,c.centroid.get(i).SetName);
         else return null;
     }
-    public static void FuzzyLogic(Scanner input,String outputPath){
-        boolean checkTermination=true;
-        while (checkTermination){
+    static ArrayList<ArrayList<Variable>> Plotting = new ArrayList<>();
+    public static void FuzzyLogic(Scanner input,String outputPath) {
+        boolean checkTermination = true;
+        ArrayList<Variable> AllVariables = null;
+        while (checkTermination) {
             //Variables
-            ArrayList<Variable> AllVariables = new ArrayList<>();
+            AllVariables = new ArrayList<>();
             //Rules
-            ArrayList<Rule> rules=new ArrayList<>();
+            ArrayList<Rule> rules = new ArrayList<>();
 
             System.out.print("""
-                Welcome to Fuzzy Logic Toolbox with Console Version
-                ===================
-                1- Create a new fuzzy system
-                2- Quit
-                """
+                    Welcome to Fuzzy Logic Toolbox with Console Version
+                    ===================
+                    1- Create a new fuzzy system
+                    2- Quit
+                    """
             );
 
             // 1 or 2
@@ -671,7 +570,6 @@ public class Main {
                                     AllVariables.add(var);
                                 }
                             }
-//                                System.out.println(AllVariables);
                             //2- Add fuzzy sets to an existing variable.
                             case '2' -> {
                                 if (validate.get(0)) {
@@ -702,7 +600,6 @@ public class Main {
                                         //input variables
                                         if (MyVariable != null) assignFuzzySet(MyVariable, parts);
                                     }
-//                                    System.out.println(AllVariables);
                                     validate.set(1, true);
                                 } else {
                                     System.out.println("CANT ADD FUZZY SET! Please add the variables First.");
@@ -744,7 +641,6 @@ public class Main {
                                             output.add(var);
                                         }
                                     }
-                                    StringBuilder str = new StringBuilder("Running the simulation...\n");
 
                                     System.out.print("""
                                             Running the simulation...
@@ -762,13 +658,9 @@ public class Main {
 
                                     CalcMemberships(AllVariables);
 
-                                    str.append("Fuzzification => done\n");
                                     System.out.println("Fuzzification => done");
 
-//                                    for (Variable var:AllVariables)
-//                                        System.out.println(var.toString());
                                     //Inference
-
 
                                     ArrayList<pair> AllPairs = new ArrayList<>();
                                     for (Variable var : AllVariables) {
@@ -777,7 +669,7 @@ public class Main {
                                             String varname = var.varName;
                                             for (Rule r : rules) {
                                                 for (Part part : r.output) {
-                                                    if (part.operation==null&&part.vName.equals(varname)) {
+                                                    if (part.operation == null && part.vName.equals(varname)) {
                                                         AllOutputs.add(r);
                                                     }
                                                 }
@@ -791,22 +683,22 @@ public class Main {
                                         }
                                     }
 
-                                    str.append("Inference => done\nDefuzzification => done\n");
                                     System.out.println("Inference => done");
 
                                     System.out.println("Defuzzification => done\n");
 
 
                                     for (int i = 0; i < AllPairs.size(); i++) {
-                                        str.append("The predicted ").append(output.get(i).varName).append(" is ").append(AllPairs.get(i).membershipName).append(" (").append(Math.round(AllPairs.get(i).membershipValue * 100) / 100.0).append(")\n");
+                                        str += "The predicted " + output.get(i).varName + " is " + AllPairs.get(i).membershipName + " (" + Math.round(AllPairs.get(i).membershipValue * 100) / 100.0 + ")\n";
                                         System.out.println("The predicted " + output.get(i).varName + " is " + AllPairs.get(i).membershipName + " (" + Math.round(AllPairs.get(i).membershipValue * 100) / 100.0 + ")\n");
                                     }
                                     validate.set(3, true);
 
 //                                    File f = new File("output.txt");
                                     freOpen(outputPath, "w");
-                                    System.out.println("khaleeeeeeeeeeeeeeeeeeeeeeeeeeed"+str);
+                                    System.out.println(str);
                                     freOpen("con.txt", "w");
+                                    Plotting.add(AllVariables);
                                 } else {
                                     System.out.println("CANT START THE SIMULATION! Please add the fuzzy sets and rules first.");
                                 }
@@ -822,9 +714,6 @@ public class Main {
         }
 
     }
-
-
-
     public static class GUI extends JFrame implements ActionListener {
         private final JButton inputFile;
         private final JButton outputFile;
@@ -833,6 +722,62 @@ public class Main {
         String inputPath="";
         String outputPath="";
         boolean checkGuiFinished;
+
+        //ploting
+
+        public static class Drawing extends ApplicationFrame{
+            private XYDataset createDataset(Variable var) {
+
+                final XYSeriesCollection dataset = new XYSeriesCollection();
+
+                for (point p:var.points){
+                    final XYSeries Line = new XYSeries(p.FuzzySetName);
+                    Line.add(p.x1, p.y1);//A point
+                    Line.add(p.x2, p.y2);//B point
+                    Line.add(p.x3, p.y3);//c point
+                    //A point
+                    if (p.x4!=-1) Line.add(p.x4, p.y4);//D point
+
+                    dataset.addSeries(Line);
+                }
+                return dataset;
+            }
+            public Drawing(String applicationTitle, String chartTitle,Variable var) {
+                super(applicationTitle);
+                JFreeChart xylineChart = ChartFactory.createXYLineChart(
+                        chartTitle,
+                        "Ranges",
+                        "Membership",
+                        createDataset(var),
+                        PlotOrientation.VERTICAL,
+                        true, true, false);
+
+                ChartPanel chartPanel = new ChartPanel(xylineChart);
+                chartPanel.setPreferredSize(new java.awt.Dimension(600, 400));
+                final XYPlot plot = xylineChart.getXYPlot();
+
+                XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+                renderer.setSeriesPaint(0, Color.BLUE);
+                renderer.setSeriesPaint(1, Color.GREEN);
+                renderer.setSeriesPaint(2, Color.RED);
+                renderer.setSeriesPaint(3, Color.ORANGE);
+                renderer.setSeriesPaint(4, Color.BLACK);
+                renderer.setSeriesPaint(5, Color.CYAN);
+                renderer.setSeriesPaint(6, Color.PINK);
+                renderer.setSeriesStroke(0, new BasicStroke(4.0f));
+                renderer.setSeriesStroke(1, new BasicStroke(3.0f));
+                renderer.setSeriesStroke(2, new BasicStroke(2.0f));
+                renderer.setSeriesStroke(3, new BasicStroke(4.0f));
+                renderer.setSeriesStroke(4, new BasicStroke(3.0f));
+                renderer.setSeriesStroke(5, new BasicStroke(2.0f));
+                renderer.setSeriesStroke(6, new BasicStroke(3.0f));
+                plot.setRenderer(renderer);
+                setContentPane(chartPanel);
+            }
+
+        }
+        //ploting
+
         GUI(boolean checkGuiFinished) {
             this.checkGuiFinished=checkGuiFinished;
             System.out.print("""
@@ -919,7 +864,6 @@ public class Main {
 
             }
 
-
             else if (e.getSource() == outputFile) {
                 JFileChooser choiceOutput = new JFileChooser();
                 choiceOutput.setCurrentDirectory(new java.io.File("."));
@@ -933,6 +877,7 @@ public class Main {
                     resadd.setText("File Output Path Selected Successfully");
                 }
             }
+
             else if(e.getSource() == run){
                 if(inputPath.length()>1 && outputPath.length()>1){
                     System.out.println("Program Running Successfully");
@@ -949,17 +894,27 @@ public class Main {
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
-                    resadd.setText(outputFileStr);
+                    resadd.setText(str);
+                    str="Running the simulation...\nFuzzification => done\nInference => done\nDefuzzification => done\n";
                     inputPath="";
                     outputPath="";
                     // plotting
+                    int i=0;
+                    for (ArrayList<Variable> var:Plotting){
+                        for (Variable v:var){
+                            GUI.Drawing chart = new GUI.Drawing("Fuzzy Toolbox", v.varName,v);
+                            chart.pack();
+                            RefineryUtilities.centerFrameOnScreen(chart);
+                            chart.setVisible(true);
+                        }
+                    }
+                    Plotting.clear();
                 }
                 else resadd.setText("You Should Select input & output files");
             }
         }
 
     }
-
 
     public static void main(String[] args) {
 
@@ -986,8 +941,15 @@ public class Main {
             else if(runChoice==3) break;
             else System.out.println("Invalid Input");
         }
-        System.out.println("System Finished Successfully");
-
+        //System.out.println("System Finished Successfully");
     }
 }
 
+
+//System.in   System.in Read From File Instead Of Console
+//very_low
+// TRAP
+// 0
+// 0
+// 10
+// 30
