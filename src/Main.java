@@ -823,25 +823,167 @@ public class Main {
 
     }
 
+
+
+    public static class GUI extends JFrame implements ActionListener {
+        private final JButton inputFile;
+        private final JButton outputFile;
+        private final JButton run;
+        private final JTextArea resadd;
+        String inputPath="";
+        String outputPath="";
+        boolean checkGuiFinished;
+        GUI(boolean checkGuiFinished) {
+            this.checkGuiFinished=checkGuiFinished;
+            System.out.print("""
+                Welcome to Fuzzy Logic Toolbox with GUI Version
+                ===============================================
+                GUI Running Now...
+                """
+            );
+            setTitle("Fuzzy System");
+            setBounds(300, 90, 680, 540);
+            setResizable(false);
+
+            Container c = getContentPane();
+            c.setLayout(null);
+
+            JLabel title = new JLabel("Fuzzy Logic Toolbox");
+            title.setFont(new Font("Comic", Font.BOLD, 30));
+            title.setSize(600, 40);
+            title.setLocation(180, 30);
+            c.add(title);
+
+
+            inputFile = new JButton("Choose Input File");
+            inputFile.setFont(new Font("Arial", Font.PLAIN, 15));
+            inputFile.setSize(180, 30);
+            inputFile.setLocation(60, 190);
+            inputFile.addActionListener(this);
+            c.add(inputFile);
+
+
+            outputFile = new JButton("Choose Output Path");
+            outputFile.setFont(new Font("Arial", Font.PLAIN, 15));
+            outputFile.setSize(180, 30);
+            outputFile.setLocation(60, 235);
+            outputFile.addActionListener(this);
+            c.add(outputFile);
+
+            run = new JButton("Run");
+            run.setFont(new Font("Arial", Font.PLAIN, 15));
+            run.setSize(180, 30);
+            run.setLocation(60, 280);
+            run.addActionListener(this);
+            c.add(run);
+
+            JTextArea tout = new JTextArea();
+            tout.setFont(new Font("Arial", Font.PLAIN, 15));
+            tout.setSize(320, 350);
+            tout.setLocation(300, 100);
+            tout.setLineWrap(true);
+            tout.setEditable(false);
+            tout.setBorder(BorderFactory.createLineBorder(Color.black));
+            c.add(tout);
+
+            JLabel res = new JLabel("");
+            res.setFont(new Font("Arial", Font.PLAIN, 15));
+            res.setSize(285, 300);
+            res.setLocation(310, 120);
+            res.setBorder(BorderFactory.createLineBorder(Color.black));
+            c.add(res);
+
+            resadd = new JTextArea();
+            resadd.setFont(new Font("Arial", Font.PLAIN, 15));
+            resadd.setSize(285, 300);
+            resadd.setLocation(310, 120);
+            resadd.setLineWrap(true);
+            c.add(resadd);
+
+            setVisible(true);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == inputFile) {
+                JFileChooser choiceInput = new JFileChooser();
+                choiceInput.setCurrentDirectory(new java.io.File("."));
+                choiceInput.setDialogTitle("Choose Input File");
+                choiceInput.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                choiceInput.setAcceptAllFileFilterUsed(false);
+
+                if (choiceInput.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    inputPath= String.valueOf(choiceInput.getSelectedFile());
+                    inputPath = inputPath.replace("\\", "//");
+                    resadd.setText("File Input Selected Successfully");
+                }
+
+            }
+
+
+            else if (e.getSource() == outputFile) {
+                JFileChooser choiceOutput = new JFileChooser();
+                choiceOutput.setCurrentDirectory(new java.io.File("."));
+                choiceOutput.setDialogTitle("Choose Output Path");
+                choiceOutput.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                choiceOutput.setAcceptAllFileFilterUsed(false);
+                if (choiceOutput.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    outputPath= String.valueOf(choiceOutput.getSelectedFile());
+                    outputPath = outputPath.replace("\\", "//");
+                    outputPath+="//";
+                    resadd.setText("File Output Path Selected Successfully");
+                }
+            }
+            else if(e.getSource() == run){
+                if(inputPath.length()>1 && outputPath.length()>1){
+                    System.out.println("Program Running Successfully");
+                    freOpen(inputPath,"r");
+
+                    //scanner
+                    Scanner input = new Scanner(System.in);
+                    //FuzzyLogic
+                    resadd.setText("Running the simulation...\n");
+                    FuzzyLogic(input, String.valueOf(Path.of(outputPath + "output.txt")));
+                    String outputFileStr;
+                    try {
+                        outputFileStr = Files.readString(Path.of(outputPath + "output.txt"));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    resadd.setText(outputFileStr);
+                    inputPath="";
+                    outputPath="";
+                    // plotting
+                }
+                else resadd.setText("You Should Select input & output files");
+            }
+        }
+
+    }
+
+
     public static void main(String[] args) {
 
         // if GUI {freOpen}
         // else not freOpen
         Scanner input = new Scanner(System.in);
-        boolean checkQuite=true;
-        while(checkQuite){
+        boolean checkGuiFinished=true;
+        while(checkGuiFinished){
             System.out.print("""
                 Fuzzy Logic Toolbox
                 ===================
-                1- Run with Console
-                2- Quit
+                1- Run with GUI
+                2- Run with Console
+                3- Quit
                 """
             );
             int runChoice=input.nextInt();
-            if(runChoice==1) FuzzyLogic(input,"output.txt");
-            else if(runChoice==2) {
-                checkQuite = false;
+
+            if(runChoice==1) {
+                checkGuiFinished=false;
+                new GUI(checkGuiFinished);
             }
+            else if(runChoice==2) FuzzyLogic(input,"output.txt");
+            else if(runChoice==3) break;
             else System.out.println("Invalid Input");
         }
         System.out.println("System Finished Successfully");
