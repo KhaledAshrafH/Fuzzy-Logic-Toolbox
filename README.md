@@ -222,7 +222,7 @@ This project was created by a team of three computer science students at Faculty
 - [Ahmed Sayed](https://github.com/AhmedSayed117).
 - [Ebarhim Muhammed](https://github.com/EbrahimHeggy).
 
-## Acknowledgments
+## Acknowledgment
 
 This Project is based on Soft Computing course at Faculty of Computers and Artificial Intelligence Cairo University. We would like to thank Dr. Samar Hesham for his guidance and support throughout this course.
 
